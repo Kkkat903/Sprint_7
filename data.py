@@ -8,7 +8,19 @@ class ResponseMassages:
 class Flags:
     COURIER_ID = "id"
 
-class Colors:
-    ORDER_COLORS = [["GREY"], ["BLACK"], ["GREY", "BLACK"], None]
+class Data:
+    ORDER_DATA = {
+                "firstName": "Naruto",
+                "lastName": "Uchiha",
+                "address": "Konoha, 142 apt.",
+                "metroStation": 4,
+                "phone": "+7 800 355 35 35",
+                "rentTime": 5,
+                "deliveryDate": "2026-11-10",
+                "comment": "Saske, come back to Konoha"
+    }
 
-    
+    ORDER_DATA_GREY = {**ORDER_DATA, "color": ["GREY"]}
+    ORDER_DATA_BLACK = {**ORDER_DATA, "color": ["BLACK"]}
+    ORDER_DATA_BOTH = {**ORDER_DATA, "color": ["GREY", "BLACK"]}
+    ORDER_DATA_NO_COLOR = ORDER_DATA.copy()

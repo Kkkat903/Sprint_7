@@ -10,19 +10,12 @@ class TestLogin:
 
     @allure.title("Успешная авторизация курьера")
     @allure.description("Проверяет, что зарегистрированный курьер может авторизоваться с корректными логином и паролем. В ответе должен присутствовать ID курьера.")
-    def test_courier_login_success(self, generate_courier_data):
-
-        with allure.step("Создать нового курьера"):
-            response = requests.post(
-                f'{U.BASE_URL}{U.CREATE_COURIER}',
-                json=generate_courier_data
-            )
-            assert response.status_code == 201
+    def test_courier_login_success(self, registered_courier):
 
         with allure.step("Подготовить данные для авторизации"):
             login_data = {
-                "login": generate_courier_data["login"],
-                "password": generate_courier_data["password"]
+                "login": registered_courier["login"],
+                "password": registered_courier["password"]
             }
 
         with allure.step("Отправить запрос на авторизацию курьера"):
@@ -40,19 +33,19 @@ class TestLogin:
     @allure.title("Авторизация без обязательного поля")
     @allure.description("Проверяет, что API возвращает ошибку 400, если при авторизации не передан логин или пароль.")
     @pytest.mark.parametrize('missing_field', ["login", "password"])
-    def test_login_without_required_fields(self, generate_courier_data, missing_field):
+    def test_login_without_required_fields(self, courier_data_with_cleanup, missing_field):
 
         with allure.step("Создать нового курьера"):
             response = requests.post(
                 f'{U.BASE_URL}{U.CREATE_COURIER}',
-                json=generate_courier_data
+                json=courier_data_with_cleanup
             )
             assert response.status_code == 201
 
         with allure.step("Подготовить данные для авторизации без обязательного поля"):
             login_data = {
-                "login": generate_courier_data["login"],
-                "password": generate_courier_data["password"]
+                "login": courier_data_with_cleanup["login"],
+                "password": courier_data_with_cleanup["password"]
             }
             del login_data[missing_field]
 
@@ -71,19 +64,19 @@ class TestLogin:
     @allure.title("Авторизация с некорректными данными")
     @allure.description("Проверяет, что API возвращает ошибку 404, если логин или пароль зарегистрированного курьера указаны неверно.")
     @pytest.mark.parametrize("wrong_field", ['login', 'password'])
-    def test_login_with_wrong_field(self, generate_courier_data, wrong_field):
+    def test_login_with_wrong_field(self, courier_data_with_cleanup, wrong_field):
 
         with allure.step("Создать нового курьера"):
             response = requests.post(
                 f'{U.BASE_URL}{U.CREATE_COURIER}',
-                json=generate_courier_data
+                json=courier_data_with_cleanup
             )
             assert response.status_code == 201
 
         with allure.step("Подготовить данные с некорректным значением"):
             login_data = {
-                "login": generate_courier_data["login"],
-                "password": generate_courier_data["password"]
+                "login": courier_data_with_cleanup["login"],
+                "password": courier_data_with_cleanup["password"]
             }
             login_data[wrong_field] = login_data[wrong_field] + "wrong"
 
@@ -101,12 +94,12 @@ class TestLogin:
 
     @allure.title("Авторизация несуществующего курьера")
     @allure.description("Проверяет, что API возвращает ошибку 404 при попытке авторизации курьера, который предварительно не был зарегистрирован.")
-    def test_login_nonexistent_user(self, generate_courier_data):
+    def test_login_nonexistent_user(self, courier_data_with_cleanup):
 
         with allure.step("Подготовить данные несуществующего курьера"):
             login_data = {
-                "login": generate_courier_data["login"],
-                "password": generate_courier_data["password"]
+                "login": courier_data_with_cleanup["login"],
+                "password": courier_data_with_cleanup["password"]
             }
 
         with allure.step("Отправить запрос на авторизацию"):
