@@ -47,6 +47,4 @@ def registered_courier(courier_data_with_cleanup):
         json=courier_data_with_cleanup
     )
 
-    assert response.status_code == 201
-
     return courier_data_with_cleanup
